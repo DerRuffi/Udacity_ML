@@ -1,26 +1,37 @@
 # Udacity Project Machine Learning - Enron Mail Dataset
 
-# Introduction
+## Introduction
 The goal of the project is to study a dataset of emails of a company called Enron. This company went bankrupt after a the fraud was detected.
 
 "Enron's complex financial statements were confusing to shareholders and analysts. In addition, its complex business model and unethical practices required that the company use accounting limitations to misrepresent earnings and modify the balance sheet to indicate favorable performance." source: https://en.wikipedia.org/wiki/Enron_scandal
 
+### Project goal
+The goals of the project are:
+- Get familar with dataset, clean dataset, check dataset for outliers
+- Visualize dependencies of features
+- Create new features (feature engineering)
+- Set up ML model to indentify if a person was a "POI" or not
+- Select best features to achieve a good presicion and recall score
+
 ### Script overview
 
-Note that 2 scripts where run with python2, since the udacity input code to convert xml to csv and to set up the sql database is written in python 2. The assessment is done with python3, since it is my preferred version. I would recommend udacity to change the input scripts to python3.
+The script "poi_id.py" and the created .pkl files are located at the sub-folder "final_project".
+The project evaluator will test these using the tester.py script.
 
-List of scripts within the project:
-- sample_py2.py -> down sizing of .osm file (python2)
-- 01_unique_tags.py -> count unique tags (python3)
-- 02_problematic_tags.py -> list problematic tags (python3)
-- 03_audit_streetname.py -> audit street names (python3)
-- 04_audit-Postcode.py -> audit post codes (python3)
-- 11_data_2_csv_py2.ipynb -> convert xml data to csv files (python2)
-- 13_build_sql_py2.ipynb -> set-up sql database (python2)
-- 15_query_py3.ipynb -> SQL queries of the choosen data set (python3)
 
 ### References:
 - https://medium.com/@williamkoehrsen/machine-learning-with-python-on-the-enron-dataset-8d71015be26d
-- Udacity course input
+- https://stackoverflow.com/questions/44511636/matplotlib-plot-feature-importance-with-feature-names
+
+## Data Exploration
+According to the documentation of the enron mail dataset the NAN values of financial data are related to a 0.
+This is not true for the email address, but replacing a NAN with a 0 here will not have an influence on results, since the email address is not a candidate for a feature.
+
+df = pd.DataFrame(data_dict)
+df = df.T
+df = df.replace('NaN', 0)
+df.dtypes
+
+
 
 ![Screenshot](pics/osm_area.png)

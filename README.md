@@ -34,8 +34,18 @@ df = df.T
 df = df.replace('NaN', 0)
 df.dtypes
 ```
+Total number of data points:
+```python
+print "Number of persons within the dataset:", len(data_dict)
+```
+146, but 1 value is the "total" row, which is removed later.
 
-
+Number of POI:
+```python
+df['poi'].value_counts()
+```
+False    127
+True      18
 
 
 

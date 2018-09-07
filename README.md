@@ -24,13 +24,18 @@ The project evaluator will test these using the tester.py script.
 - https://stackoverflow.com/questions/44511636/matplotlib-plot-feature-importance-with-feature-names
 
 ## Data Exploration
+First, I will import the dict into a pandas Dataframe, since it will make the data exploration and clean up much easier for me. <br>
 According to the documentation of the enron mail dataset the NAN values of financial data are related to a 0.
 This is not true for the email address, but replacing a NAN with a 0 here will not have an influence on results, since the email address is not a candidate for a feature.
 
+```python
 df = pd.DataFrame(data_dict)
 df = df.T
 df = df.replace('NaN', 0)
 df.dtypes
+```
+
+
 
 
 

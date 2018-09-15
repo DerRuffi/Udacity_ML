@@ -20,8 +20,8 @@ The goals of the project are:
 ### Script overview
 Documentation: 
 1. Jupyter Notebook file "poi_id.ipynb" at the sub-folder "final_project"
-2. PDF file "poi_id.html" (copy of jupyter notebook) in the main directory
-3. PDF file "poi_id_v1.pdf" (copy of jupyter notebook) in the main directory
+2. html file "poi_id.html" (copy of jupyter notebook) in the main directory
+3. PDF file "poi_id_v2.pdf" (copy of jupyter notebook) in the main directory
 4. The script "poi_id.py" (extract from the jupyter file) and the created .pkl files are located at the sub-folder "final_project". The project evaluator will test these using the tester.py script.
 
 

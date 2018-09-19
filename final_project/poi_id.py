@@ -51,7 +51,7 @@
 # - Ref. 1: https://medium.com/@williamkoehrsen/machine-learning-with-python-on-the-enron-dataset-8d71015be26d
 # - Ref. 2: https://stackoverflow.com/questions/44511636/matplotlib-plot-feature-importance-with-feature-names
 
-# In[1]:
+# In[172]:
 
 
 #!/usr/bin/python
@@ -79,7 +79,7 @@ from tester import dump_classifier_and_data
 
 # ## Task 1: Feature Selection
 
-# In[2]:
+# In[173]:
 
 
 ### Load the dictionary containing the dataset
@@ -87,7 +87,7 @@ with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
 
 
-# In[3]:
+# In[174]:
 
 
 ### Task 1: Select what features you'll use.
@@ -108,14 +108,14 @@ print("number of features:" , len(features_list))
 
 # ## Data Exploration
 
-# In[4]:
+# In[175]:
 
 
 # print names of all 146 individuals:
 #print data_dict.keys()
 
 
-# In[5]:
+# In[176]:
 
 
 # print entries of the first person:
@@ -127,7 +127,7 @@ print data_dict['ALLEN PHILLIP K']
 # According to the documentation of the enron mail dataset the NAN values of financial data are related to a 0.
 # This is not true for the email address, but replacing a NAN with a 0 here will not have an influence on results, since the email address is not a candidate for a feature.
 
-# In[6]:
+# In[177]:
 
 
 print "Number of persons within the dataset:", len(data_dict)
@@ -135,7 +135,7 @@ print "Number of persons within the dataset:", len(data_dict)
 
 # 146, but 1 value is the "total" row, which is removed later.
 
-# In[7]:
+# In[178]:
 
 
 df = pd.DataFrame(data_dict)
@@ -147,20 +147,20 @@ df.head()
 # Some features contain many nan, but as written above this actually means 0.
 # For this reason I replance np.nan with 0.
 
-# In[8]:
+# In[179]:
 
 
 df = df.replace('NaN', np.nan)
 df.isnull().sum()
 
 
-# In[9]:
+# In[180]:
 
 
 df = df.replace(np.nan, 0)
 
 
-# In[10]:
+# In[181]:
 
 
 df.head()
@@ -169,13 +169,13 @@ df.head()
 # ### Task 2: Remove outliers
 # The total entry is obviously an outlier, which will be droped from the dataframe
 
-# In[11]:
+# In[182]:
 
 
 df.plot('salary','bonus',kind = 'scatter')
 
 
-# In[12]:
+# In[183]:
 
 
 df[df['bonus']==df['bonus'].max()]
@@ -183,7 +183,7 @@ df[df['bonus']==df['bonus'].max()]
 
 # The "total" row is an obvious outlier and will be removed.
 
-# In[13]:
+# In[184]:
 
 
 
@@ -192,14 +192,14 @@ data_dict.pop('TOTAL', 0)
 df.plot('salary','bonus',kind = 'scatter')
 
 
-# In[14]:
+# In[185]:
 
 
 # count number of POI/non-POI
 df['poi'].value_counts()
 
 
-# In[15]:
+# In[186]:
 
 
 #sns.pairplot(df, vars=['salary', 'total_payments'], hue= 'poi', size = 5)
@@ -207,7 +207,7 @@ sns.lmplot(data = df, x = 'bonus', y = 'salary', hue = 'poi', size = 8)
 sns.lmplot(data = df, x = 'restricted_stock_deferred', y = 'restricted_stock', hue = 'poi', size = 8)
 
 
-# In[16]:
+# In[187]:
 
 
 # looking at the graph above, I think the feature "restricted_stock_deferred" is irrelevant to identify poi, and will decrease accuracy.
@@ -217,7 +217,7 @@ df[df['restricted_stock_deferred']==df['restricted_stock_deferred'].max()]
 
 # ## Task 3: Create new feature(s)
 
-# In[17]:
+# In[188]:
 
 
 ### Task 3: Create new feature(s)
@@ -232,7 +232,7 @@ df = df.fillna(0)
 df.plot('to_poi_ratio','from_poi_ratio',kind = 'scatter')
 
 
-# In[18]:
+# In[189]:
 
 
 sns.lmplot(data = df, x = 'from_poi_ratio', y = 'to_poi_ratio', hue = 'poi', size = 5)
@@ -240,7 +240,7 @@ sns.lmplot(data = df, x = 'from_poi_ratio', y = 'to_poi_ratio', hue = 'poi', siz
 
 # In the following lines of code I convert the pandas dataframe back to a dict, since the tester.py script expects this format.
 
-# In[19]:
+# In[190]:
 
 
 ### Store to my_dataset for easy export below.
@@ -256,7 +256,7 @@ features_df = df[features_list].drop(['poi'], axis = 1)
 
 # ## Task 4: Try a varity of classifiers
 
-# In[20]:
+# In[191]:
 
 
 ### Task 4: Try a varity of classifiers
@@ -277,7 +277,7 @@ recall = recall_score(labels_test, pred)
 print "SVC accuracy score:","%.2f" % round(accuracy,3) , "precision:","%.2f" % round(prec,3), "recall:","%.2f" % round(recall,3)
 
 from sklearn.tree import DecisionTreeClassifier
-clf = DecisionTreeClassifier(random_state=2)
+clf = DecisionTreeClassifier(random_state=2, max_features=5)
 clf_select = clf
 clf.fit(features_train,labels_train)
 clf_select.fit(features_train,labels_train)
@@ -303,12 +303,14 @@ print confusion_matrix(labels_test, pred)
 
 
 # #### pick an algorithm
+# By manually changing the hyper-parameter 'max_features' to 8 I could increase the precision score from 0.25 to 0.31 and the recall score from 0.25 to 0.33.
+# 
 # Initially, the DTC did perform best, so I have choosen this model for further fine tuning.
 # Note that the initial precision and recall score of the RFC was worse than the DTC.
-# This changed after removing the 'directors fee' featuire from the list.
+# This changed after removing the 'directors fee' feature from the list.
 # 
 
-# In[21]:
+# In[192]:
 
 
 #plot the feature importances of random decision tree classifier
@@ -320,53 +322,96 @@ print confusion_matrix(labels_test, pred)
 # ## Task 5: Tune the classifier 
 # The precision and recall rate of the decision tree classifier is quite promising, and I will try to tune it in this chapter.
 
-# In[22]:
+# In[193]:
 
 
-### Task 5: Tune your classifier to achieve better than .3 precision and recall 
-### using our testing script. Check the tester.py script in the final project
-### folder for details on the evaluation method, especially the test_classifier
-### function. Because of the small size of the dataset, the script uses
-### stratified shuffle split cross validation. For more info: 
-### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
+from sklearn.pipeline import Pipeline
+from sklearn.grid_search import GridSearchCV
+from sklearn.feature_selection import SelectKBest, f_classif
 
-# Example starting point. Try investigating other evaluation techniques!
 
-clf = DecisionTreeClassifier(max_depth=None,min_samples_split=2,max_features=8,random_state=2)
-clf.fit(features_train,labels_train)
-score = clf.score(features_test,labels_test)
-pred = clf.predict(features_test)
+# ### Automated Feature Selection with GridSearchCV with SelectKBest
+# I will now use GridSearchCV with SelectKBest to search for the best features for the decision tree classifier. As proposed by the reviewer, I combine the selection of features and the algorithm using a pipeline. In this way the best features are selected in an automated way.
+# The GridSearchCV tunes the "number of features to be selected" and the hyperparameter of the estimator, by selecting the parameters that give the best score on validation data.
+# 
+
+# In[194]:
+
+
+n_features = np.arange(1, len(features_list))
+kbest = SelectKBest(f_classif)
+#param_grid = [{'select_features__k': n_features}]
+# Use GridSearchCV to automate the process of finding the optimal number of features
+#tree_clf= GridSearchCV(pipe, param_grid=param_grid, scoring='f1', cv = 10)
+#tree_clf.fit(features_train,labels_train)
+
+pipeline = Pipeline([('kbest', kbest), ('classify', DecisionTreeClassifier(random_state=2))])
+grid_search = GridSearchCV(pipeline, {'kbest__k': [6,8,10,12,14], 'classify__max_depth': [5,10,15],
+                                      'classify__min_samples_split': [2,4,6]                               
+                                     }, scoring='f1')
+grid_search.fit(features_train,labels_train)
+
+print(grid_search.grid_scores_)
+print(grid_search.best_params_)
+print(grid_search.best_score_)
+
+
+# In[195]:
+
+
+score = grid_search.score(features_test,labels_test)
+pred = grid_search.predict(features_test)
 accuracy = accuracy_score(labels_test, pred)
 prec = precision_score(labels_test, pred)
 recall = recall_score(labels_test, pred)
-print "DTC accuracy score:","%.2f" % round(accuracy,3) , "precision:","%.2f" % round(prec,3), "recall:","%.2f" % round(recall,3)
 
+print "RFC accuracy score:","%.2f" % round(accuracy,3) , "precision:","%.2f" % round(prec,3), "recall:","%.2f" % round(recall,3)
 
 print confusion_matrix(labels_test, pred)
 
 
 # #### usage of evaluation metrics
 # I have tuned the model in a way that it can correctly predict 2 of 4 POI of the test data set. (recall score)
-# On the other hand, 3 persons were wrongly labeled as POI by the model, resulting in a precision score of 0.4.
+# On the other hand, 2 persons were wrongly labeled as POI by the model, resulting in a precision score of 0.33.
 
-# #### discussion of parameter tuning
-# By changing the hyper-parameter 'max_features' to 8 I could increase the precision score from 0.25 to 0.31 and the recall score from 0.25 to 0.33.
+# ### Discussion of parameter tuning
+# 
+# Hyperparameters are set before any Machine learning algorithm is run, hence, it becomes very essential to set an optimal value of hyperparameters as it effects the convergence of any algorithm to a large extent.
+# 
+# 
 # Comparing the feature importance plots before and after tuning indicates that this change had also an impact on the weight of the features. The most important feature still remains "exercised stock options" followed by "shared receipt ratio".
 
-# In[23]:
+# In[196]:
 
 
 (pd.Series(clf.feature_importances_, index=features_train.columns)
-   .nlargest(10)
+   .nlargest(12)
    .plot(kind='barh',title="Feature importance Decision Tree Clf - tuned"))
 
 
-# In[24]:
+# Running the tester.py script with this model gives following results:
+# 
+# Accuracy: 0.86553	Precision: 0.48791	Recall: 0.17150	F1: 0.25379	F2: 0.19706
+# Total predictions: 15000	True positives:  343	False positives:  360	False negatives: 1657	True negatives: 12640
+# 
+# This results is worse compared to the inital DecisionTreeClassifier with max_features=8
+# 
+
+# In[197]:
 
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
+clf = DecisionTreeClassifier(random_state=2, max_features=8)
+clf.fit(features_train,labels_train)
 dump_classifier_and_data(clf, my_dataset, features_list)
 
+
+# ### Final Results running the tester.py script
+# 
+# Accuracy: 0.81580	Precision: 0.31911	Recall: 0.33650	F1: 0.32757	F2: 0.33287
+# Total predictions: 15000	True positives:  673	False positives: 1436	False negatives: 1327	True negatives: 11564
+# 
+# 
